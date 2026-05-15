@@ -1,0 +1,10 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+      "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "/home/work/.jdk/jdk-21.0.10"
+    }
+  ],
+  "java.configuration.javaHome": "/home/work/.jdk/jdk-21.0.10"
+}
