@@ -6,4 +6,5 @@ import com.misheho.spb_app.Penguin;
 public interface PenguinRepository extends JpaRepository<Penguin, Long>{
     List<Penguin> findBySpecies(String species);
 
+
 }
