@@ -64,4 +64,11 @@ class SpbAppApplicationTests {
 			.andExpect(jsonPath("$.status").value("ok"));
 	}
 
+	@Test
+	void currentDateTimeEndpointReturnsDateTime() throws Exception {
+		mockMvc.perform(get("/api/datetime"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.dateTime").isNotEmpty());
+	}
 }
