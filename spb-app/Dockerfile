@@ -17,7 +17,7 @@ USER spring
 COPY --from=builder /spb-app/target/*.jar spb-app.jar
 
 # Expose the default Spring Boot port
-EXPOSE 8080
+EXPOSE 8081
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \

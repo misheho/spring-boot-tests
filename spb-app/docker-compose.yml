@@ -4,19 +4,30 @@ services:
   # ┌───────────────────────────────────────┐
   # │ APPLICATION SERVICE                    │
   # └───────────────────────────────────────┘
-  app:
-    build: .                     # Uses your existing Dockerfile
+  spb-app:
+    build:
+      context: .
     ports:
-      - "9090:8080"
+      - "8081:8081"
     environment:
-      # Connection string to the 'db' service (container name)
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/spb_db
-      SPRING_DATASOURCE_USERNAME: spb_user
-      SPRING_DATASOURCE_PASSWORD: spb_user_pwd
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update  # Auto-create schema (Dev only!)
+      DB_HOST: jdbc:postgresql://db:5432/spb_db
+      DB_USERNAME: spb_user
+      DB_PASSWORD: spb_user_pwd
     depends_on:
       db:
-        condition: service_healthy  # Wait for DB to be ready
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ┌───────────────────────────────────────┐
+  # │ API GATEWAY SERVICE            │
+  # └───────────────────────────────────────┘
+  api-gateway:
+    build:
+      context: ../../spring-cloud-api-gateway/api-gateway
+    ports:
+      - "8090:8090"
+    depends_on:
+      - spb-app
     restart: unless-stopped
 
   # ┌───────────────────────────────────────┐
@@ -25,22 +36,19 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: spb_db                 # Database name
+      POSTGRES_DB: spb_db
       POSTGRES_USER: spb_user
       POSTGRES_PASSWORD: spb_user_pwd
     ports:
-      - "5433:5432"                      # Expose for local dev access
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Persist data across restarts
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U spb_user"]
+      test: ["CMD-SHELL", "pg_isready -U spb_user -d spb_db"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
 volumes:
-  pgdata:
-
-volumes:
-  postgres_data:                         # Named volume persists data on disk
+  postgres_data:
